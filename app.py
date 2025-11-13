@@ -21,158 +21,63 @@ HTML_FORM = """
     --text: #1f2937;
     --border: #e5e7eb;
   }
-
-  * {
-    box-sizing: border-box;
-  }
-
+  * { box-sizing: border-box; }
   body {
     font-family: 'Inter', sans-serif;
     background: var(--bg);
-    margin: 0;
-    padding: 0;
-    color: var(--text);
+    margin: 0; padding: 0; color: var(--text);
   }
-
   .container {
-    max-width: 720px;
-    margin: 3em auto;
-    background: var(--card);
-    padding: 2.5em;
+    max-width: 720px; margin: 3em auto;
+    background: var(--card); padding: 2.5em;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   }
-
-  h2 {
-    text-align: center;
-    margin-bottom: 1em;
-  }
-
+  h2 { text-align: center; margin-bottom: 1em; }
   input, textarea, button {
-    width: 100%;
-    font-size: 1em;
-    margin: 0.5em 0;
-    padding: 0.7em;
-    border-radius: 8px;
-    border: 1px solid var(--border);
+    width: 100%; font-size: 1em;
+    margin: 0.5em 0; padding: 0.7em;
+    border-radius: 8px; border: 1px solid var(--border);
   }
-
-  input:focus, textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
-  }
-
   button {
-    background: var(--primary);
-    color: white;
-    border: none;
-    cursor: pointer;
+    background: var(--primary); color: white;
+    border: none; cursor: pointer; font-weight: 600;
     transition: 0.2s;
-    font-weight: 600;
   }
-
   button:hover { background: var(--primary-dark); }
-
-  h3 {
-    margin-top: 2em;
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 0.3em;
-  }
-
-  /* Markdown Preview Container */
   .preview {
-    background: #f9fafb;
-    padding: 1em 1.2em;
-    border-radius: 8px;
-    min-height: 80px;
+    background: #f9fafb; padding: 1em 1.2em;
+    border-radius: 8px; min-height: 80px;
     border: 1px solid var(--border);
-    overflow-x: auto;
-    word-wrap: break-word;
-    overflow-wrap: anywhere;
-    max-width: 100%;
-    color: #111827;
+    overflow-x: auto; word-wrap: break-word;
   }
-
-  .preview h1, .preview h2, .preview h3,
-  .preview p, .preview ul, .preview ol {
-    margin: 0.4em 0;
-  }
-
-  .preview pre {
-    background: #1e293b;
-    color: #f8fafc;
-    padding: 0.6em;
-    border-radius: 6px;
-    overflow-x: auto;
-  }
-
-  .preview code {
-    background: #e2e8f0;
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-family: monospace;
-  }
-
-  .preview img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 6px;
-  }
-
-  /* Toast */
   #toast {
-    visibility: hidden;
-    min-width: 250px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 8px;
-    padding: 12px;
-    position: fixed;
-    z-index: 9999;
-    left: 50%;
-    bottom: 30px;
-    transform: translateX(-50%);
-    font-size: 16px;
-    opacity: 0;
-    transition: opacity 0.5s, bottom 0.5s;
+    visibility: hidden; min-width: 250px;
+    background-color: #333; color: #fff;
+    text-align: center; border-radius: 8px;
+    padding: 12px; position: fixed;
+    z-index: 9999; left: 50%; bottom: 30px;
+    transform: translateX(-50%); font-size: 16px;
+    opacity: 0; transition: opacity 0.5s, bottom 0.5s;
   }
-
-  #toast.show {
-    visibility: visible;
-    opacity: 1;
-    bottom: 50px;
-  }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .container {
-      margin: 1em;
-      padding: 1.5em;
-    }
-  }
+  #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 </style>
 <script>
 async function sendAnnouncement(event) {
   event.preventDefault();
   const form = event.target;
   const data = new FormData(form);
-
   const res = await fetch("/", { method: "POST", body: data });
   const text = await res.text();
-
   if (res.ok) showToast("✅ " + text);
   else showToast("❌ " + text);
 }
-
 function showToast(msg) {
   const toast = document.getElementById("toast");
   toast.textContent = msg;
   toast.className = "show";
   setTimeout(() => toast.className = toast.className.replace("show", ""), 3500);
 }
-
 function updatePreview() {
   const text = document.getElementById("message").value;
   fetch("/preview", {
@@ -188,17 +93,18 @@ function updatePreview() {
 <body>
   <div class="container">
     <h2>📢 Discord Announcement Panel</h2>
-    <form method="POST" onsubmit="sendAnnouncement(event)">
+    <form method="POST" enctype="multipart/form-data" onsubmit="sendAnnouncement(event)">
       <input type="password" name="key" placeholder="Admin Key" required>
-      <input name="title" placeholder="Judul Announcement" required>
+      <input name="title" placeholder="Judul Announcement" >
       <textarea id="message" name="message" placeholder="Tulis pesan (Markdown supported)" oninput="updatePreview()"></textarea>
+      <label>Upload Image (optional):</label>
+      <input type="file" name="image_file" accept="image/*">
       <button type="submit">Send</button>
     </form>
 
     <h3>Markdown Preview</h3>
     <div id="preview" class="preview"><em>kosong</em></div>
   </div>
-
   <div id="toast"></div>
 </body>
 </html>
@@ -211,13 +117,25 @@ def announce():
             return "Unauthorized", 403
 
         title = request.form["title"]
-        message = request.form["message"]
-        msg = { "content": f"# {title} \n{message}" }
+        message = f"{title}\n{request.form['message']}"
+        image_file = request.files.get("image_file")
+
         try:
-            r = requests.post(DISCORD_WEBHOOK, json=msg)
-            return f"Sent to Discord! ({r.status_code})"
+            if image_file and image_file.filename != "":
+                files = {"file": (image_file.filename, image_file.stream, image_file.mimetype)}
+                data = {"content": message}
+                r = requests.post(DISCORD_WEBHOOK, data=data, files=files)
+            else:
+                r = requests.post(DISCORD_WEBHOOK, json={"content": message})
+
+            if r.status_code in (200, 204):
+                return "Sent to Discord! ✅"
+            else:
+                return f"Error sending ({r.status_code}): {r.text}", 500
+
         except Exception as e:
             return f"Error: {e}", 500
+
     return render_template_string(HTML_FORM)
 
 @app.route("/preview", methods=["POST"])
