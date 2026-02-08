@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CTF Announcer Panel</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+  <div class="container">
+    <h1>📣 CTF Announcement</h1>
+    <p class="subtitle">Discord announcer dashboard</p>
+
+    <form method="POST" enctype="multipart/form-data" onsubmit="sendAnnouncement(event)">
+      <label>Admin Key</label>
+      <input type="password" name="key" required>
+
+      <label>Title (optional)</label>
+      <input name="title">
+
+      <label>Message (Markdown)</label>
+      <textarea id="message" name="message" oninput="updatePreview()"></textarea>
+
+      <label>Image (optional)</label>
+      <input type="file" name="image_file" accept="image/*">
+
+      <button type="submit">SEND</button>
+    </form>
+
+    <section class="preview-wrapper">
+      <h3>Preview</h3>
+      <div id="preview" class="preview"><em>kosong</em></div>
+    </section>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
+
