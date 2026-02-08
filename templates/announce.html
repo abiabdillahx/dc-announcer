@@ -1,67 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>CTF Announcer Panel</title>
+{% extends "base.html" %}
 
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+{% block title %}Announce - POROS Announcer{% endblock %}
 
-<body>
-  <div class="container">
-    <h1>📣 CTF Announcement</h1>
-    <p class="subtitle">
-      Discord announcer dashboard<br>
-      <small>
-        Supports <strong>Markdown</strong> & optional <strong>image upload</strong>
-      </small>
-    </p>
+{% block content %}
+<div class="panel">
+  <h1>📣 Announcement Panel</h1>
+  <p class="subtitle">
+    Create and send announcements to Discord. Supports Markdown and optional image uploads.
+  </p>
 
-    <form method="POST"
-          enctype="multipart/form-data"
-          onsubmit="sendAnnouncement(event)">
+  <form method="POST"
+        enctype="multipart/form-data"
+        onsubmit="sendAnnouncement(event)">
 
-      <label>Admin Key</label>
-      <input type="password" name="key" placeholder="admin secret key" required>
-
-      <label>Title (optional)</label>
-      <input name="title" placeholder="Judul pengumuman">
-
-      <label>
-        Message (Markdown supported)
-        <span class="hint">
-          *bold*, _italic_, `code`, ```block```, # heading
-        </span>
-      </label>
-      <textarea
-        id="message"
-        name="message"
-        placeholder="Tulis pengumuman di sini..."
-        oninput="updatePreview()"></textarea>
-
-      <label>
-        Image (optional)
-        <span class="hint">
-          PNG / JPG / GIF — akan dikirim sebagai attachment ke Discord
-        </span>
-      </label>
-      <input type="file" name="image_file" accept="image/*">
-
-      <button type="submit">🚀 SEND ANNOUNCEMENT</button>
-    </form>
-
-    <section class="preview-wrapper">
-      <h3>Live Preview</h3>
-      <div id="preview" class="preview">
-        <em>Preview markdown akan muncul di sini…</em>
+    <div class="grid">
+      <div>
+        <label for="title">Title (optional)</label>
+        <input type="text" id="title" name="title" placeholder="Judul pengumuman">
       </div>
-    </section>
-  </div>
 
-  <div id="toast"></div>
+      <div>
+        <label for="image_file">Image (optional)</label>
+        <input type="file" id="image_file" name="image_file" accept="image/*" onchange="previewImage(event)">
+      </div>
+    </div>
 
-  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-</body>
-</html>
+    <label for="message">Message (Markdown supported)</label>
+    <textarea
+      id="message"
+      name="message"
+      placeholder="Tulis pengumuman di sini..."
+      oninput="updatePreview()"
+      required
+    ></textarea>
 
+    <button type="submit">🚀 SEND ANNOUNCEMENT</button>
+  </form>
+
+  <section class="preview-wrapper">
+    <h3>Live Preview</h3>
+    <div class="preview">
+      <div id="preview-text"><em>Preview markdown akan muncul di sini…</em></div>
+      <img id="preview-image" class="preview-image" hidden alt="Image preview">
+    </div>
+  </section>
+</div>
+
+<div id="toast"></div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

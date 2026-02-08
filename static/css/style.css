@@ -24,37 +24,21 @@ body {
     radial-gradient(1200px 600px at 20% -10%, rgba(79,209,197,0.12), transparent 60%),
     radial-gradient(1000px 500px at 90% 10%, rgba(99,102,241,0.12), transparent 55%),
     var(--bg);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: var(--text-main);
 }
 
 /* === CARD === */
-.container {
-  width: 820px;
-  background: var(--card);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 2.5rem;
-
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.02),
-    0 20px 60px rgba(0,0,0,0.6),
-    0 0 40px rgba(79,209,197,0.08);
-}
+/* Removed .container as it's no longer used for the main announcement page */
 
 /* === HEADINGS === */
-h1 {
+.panel h1 { /* Adjusted to be specific to .panel */
   margin: 0;
   font-size: 2.1rem;
   font-weight: 700;
   letter-spacing: 0.4px;
 }
 
-.subtitle {
+.panel .subtitle { /* Adjusted to be specific to .panel */
   margin-top: 0.3rem;
   margin-bottom: 2.2rem;
   color: var(--text-muted);
@@ -68,6 +52,13 @@ label {
   margin-bottom: 0.4rem;
   font-weight: 600;
   color: var(--text-main);
+}
+
+.hint { /* New style for hint spans */
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+  font-weight: normal;
 }
 
 input,
@@ -138,6 +129,7 @@ button {
   font-weight: 700;
   font-size: 0.95rem;
   letter-spacing: 0.5px;
+  font-family: Outfit, sans-serif;
 
   background: linear-gradient(
     180deg,
@@ -287,3 +279,51 @@ body.dashboard {
   border: 1px solid var(--border);
 }
 
+/* === LOGIN PAGE === */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box; /* ensure padding doesn't affect width calculations */
+  width: 100%; /* Take full width to allow centering */
+}
+
+.login-container h2 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  margin-bottom: 2rem;
+}
+
+.login-container form {
+  width: 100%;
+  max-width: 400px; /* Limit form width */
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.02),
+    0 20px 60px rgba(0,0,0,0.6),
+    0 0 40px rgba(79,209,197,0.08);
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  margin-bottom: 1rem;
+}
+
+.login-container button {
+  margin-top: 1rem;
+}
+
+.login-container .error {
+  color: var(--danger);
+  margin-top: -1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}

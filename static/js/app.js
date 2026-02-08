@@ -3,7 +3,7 @@ async function sendAnnouncement(event) {
   const form = event.target;
   const data = new FormData(form);
 
-  const res = await fetch("/", {
+  const res = await fetch("/send", {
     method: "POST",
     body: data
   });
@@ -21,6 +21,7 @@ function showToast(msg) {
 
 function updatePreview() {
   const text = document.getElementById("message").value;
+  const previewTextElement = document.getElementById("preview-text"); // New element for markdown preview
 
   fetch("/preview", {
     method: "POST",
@@ -29,7 +30,23 @@ function updatePreview() {
   })
     .then(r => r.text())
     .then(html => {
-      document.getElementById("preview").innerHTML = html || "<em>kosong</em>";
+      previewTextElement.innerHTML = html || "<em>Preview markdown akan muncul di sini…</em>"; // Update to use previewTextElement
     });
 }
 
+function previewImage(event) {
+  const reader = new FileReader();
+  const imageElement = document.getElementById("preview-image");
+  const file = event.target.files[0];
+
+  if (file) {
+    reader.onload = function(e) {
+      imageElement.src = e.target.result;
+      imageElement.hidden = false;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    imageElement.src = "";
+    imageElement.hidden = true;
+  }
+}
