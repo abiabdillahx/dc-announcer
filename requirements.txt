@@ -1,5 +1,7 @@
 flask
+flask-login
+flask-sqlalchemy
+werkzeug
 requests
 markdown
 python-dotenv
-

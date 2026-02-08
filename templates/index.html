@@ -1,43 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>CTF Announcer Panel</title>
+{% extends "base.html" %}
+{% block title %}POROS Announcer{% endblock %}
 
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+{% block content %}
+<h1>📣 POROS Announcer</h1>
+<p class="subtitle">Discord announcement dashboard</p>
 
-<body>
-  <div class="container">
-    <h1>📣 CTF Announcement</h1>
-    <p class="subtitle">Discord announcer dashboard</p>
+<form method="POST" enctype="multipart/form-data" onsubmit="sendAnnouncement(event)" class="panel">
 
-    <form method="POST" enctype="multipart/form-data" onsubmit="sendAnnouncement(event)">
-      <label>Admin Key</label>
-      <input type="password" name="key" required>
+  <div class="grid">
+    <div>
+      <label>Title</label>
+      <input name="title" placeholder="Announcement title">
+    </div>
 
-      <label>Title (optional)</label>
-      <input name="title">
-
-      <label>Message (Markdown)</label>
-      <textarea id="message" name="message" oninput="updatePreview()"></textarea>
-
+    <div>
       <label>Image (optional)</label>
-      <input type="file" name="image_file" accept="image/*">
-
-      <button type="submit">SEND</button>
-    </form>
-
-    <section class="preview-wrapper">
-      <h3>Preview</h3>
-      <div id="preview" class="preview"><em>kosong</em></div>
-    </section>
+      <input type="file" name="image_file" accept="image/*" onchange="previewImage(event)">
+    </div>
   </div>
 
-  <div id="toast"></div>
+  <label>Message (Markdown)</label>
+  <textarea id="message" name="message" oninput="updatePreview()"></textarea>
 
-  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-</body>
-</html>
+  <button type="submit">SEND ANNOUNCEMENT</button>
+</form>
+
+<section class="preview-wrapper">
+  <h3>Live Preview</h3>
+  <div class="preview">
+    <div id="preview-text"><em>kosong</em></div>
+    <img id="preview-image" class="preview-image" hidden>
+  </div>
+</section>
+
+<div id="toast"></div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}
 

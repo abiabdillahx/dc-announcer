@@ -1,57 +1,144 @@
-from flask import Flask, request, render_template
-import requests, os
+import os
+import requests
+from flask import Flask, render_template, request
+from flask_login import LoginManager, login_required
 from markdown import markdown
-from dotenv import load_dotenv
 
-load_dotenv()
+from models import db, User
+from auth import auth_bp
+
+# ======================================================
+# App init
+# ======================================================
 
 app = Flask(__name__)
 
+# ---------- ENV ----------
+app.secret_key = os.getenv("SECRET_KEY")
+
 DISCORD_WEBHOOK = os.getenv("DISCORD_WEBHOOK")
-ADMIN_KEY = os.getenv("ADMIN_KEY", "admin123")
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
 
-@app.route("/", methods=["GET", "POST"])
+# ======================================================
+# Database (Flask-native instance path)
+# ======================================================
+
+# Pastikan instance folder ada (WAJIB di Docker)
+os.makedirs(app.instance_path, exist_ok=True)
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    db_path = os.path.join(app.instance_path, "app.db")
+    DATABASE_URL = f"sqlite:///{db_path}"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db.init_app(app)
+
+# ======================================================
+# Login manager
+# ======================================================
+
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+# ======================================================
+# Blueprints
+# ======================================================
+
+app.register_blueprint(auth_bp)
+
+# ======================================================
+# Routes
+# ======================================================
+
+@app.route("/")
+@login_required
 def announce():
-    if request.method == "POST":
-        if request.form.get("key") != ADMIN_KEY:
-            return "Unauthorized", 403
+    return render_template("announce.html")
 
-        title = request.form.get("title", "").strip()
-        body = request.form.get("message", "")
-        content = f"# {title}\n{body}" if title else body
 
-        image_file = request.files.get("image_file")
+@app.route("/send", methods=["POST"])
+@login_required
+def send():
+    if not DISCORD_WEBHOOK:
+        return "DISCORD_WEBHOOK not set", 500
 
-        try:
-            if image_file and image_file.filename:
-                files = {
-                    "file": (
-                        image_file.filename,
-                        image_file.stream,
-                        image_file.mimetype
-                    )
-                }
-                data = {"content": content}
-                r = requests.post(DISCORD_WEBHOOK, data=data, files=files)
-            else:
-                r = requests.post(DISCORD_WEBHOOK, json={"content": content})
+    title = request.form.get("title", "").strip()
+    msg = request.form.get("message", "").strip()
 
-            if r.status_code in (200, 204):
-                return "Sent to Discord!"
-            return f"Discord error: {r.text}", 500
+    content = f"# {title}\n{msg}" if title else msg
 
-        except Exception as e:
-            return f"Error: {e}", 500
+    data = {
+        "content": content
+    }
 
-    return render_template("index.html")
+    files = None
+
+    # ===== IMAGE OPTIONAL =====
+    if "image_file" in request.files:
+        img = request.files["image_file"]
+
+        if img and img.filename:
+            files = {
+                "file": (img.filename, img.stream, img.mimetype)
+            }
+
+    # ===== SEND TO DISCORD =====
+    r = requests.post(
+        DISCORD_WEBHOOK,
+        data=data,
+        files=files,
+        timeout=10
+    )
+
+    return ("OK", 200) if r.status_code in (200, 204) else ("FAIL", 500)
 
 
 @app.route("/preview", methods=["POST"])
+@login_required
 def preview():
     text = request.form.get("text", "")
     return markdown(text)
 
 
+# ======================================================
+# Bootstrap DB + Admin (RUN ONCE)
+# ======================================================
+
+def bootstrap():
+    db.create_all()
+
+    if not User.query.first():
+        admin = User.create_admin(ADMIN_USERNAME, ADMIN_PASSWORD)
+        db.session.add(admin)
+        db.session.commit()
+        print("[+] Admin user created")
+    else:
+        print("[*] Admin already exists")
+
+
+# ======================================================
+# Main
+# ======================================================
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    with app.app_context():
+        bootstrap()
+
+    app.run(
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", 5000)),
+        debug=os.getenv("FLASK_DEBUG", "false").lower() == "true"
+    )
 
