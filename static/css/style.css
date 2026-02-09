@@ -327,3 +327,36 @@ body.dashboard {
   margin-bottom: 1rem;
   text-align: center;
 }
+
+/* === UTILITIES === */
+.text-center {
+  text-align: center;
+}
+
+/* === 404 PAGE SPECIFIC === */
+.panel .error-code {
+  font-size: 5em;
+  margin-bottom: 0.2em;
+  color: var(--danger);
+}
+
+.panel h2 {
+  font-size: 2em;
+  margin-bottom: 0.5em;
+}
+
+.panel p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 1.5em;
+}
+
+.panel a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.panel a:hover {
+  text-decoration: underline;
+}
