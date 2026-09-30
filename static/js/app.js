@@ -35,18 +35,15 @@ function updatePreview() {
 }
 
 function previewImage(event) {
-  const reader = new FileReader();
-  const imageElement = document.getElementById("preview-image");
-  const file = event.target.files[0];
+  const container = document.getElementById("preview-image-container");
+  container.innerHTML = "";
 
-  if (file) {
-    reader.onload = function(e) {
-      imageElement.src = e.target.result;
-      imageElement.hidden = false;
-    };
+  for (const file of event.target.files) {
+    const reader = new FileReader();
+    const img = document.createElement("img");
+    img.className = "preview-image";
+    reader.onload = e => { img.src = e.target.result; };
     reader.readAsDataURL(file);
-  } else {
-    imageElement.src = "";
-    imageElement.hidden = true;
+    container.appendChild(img);
   }
 }

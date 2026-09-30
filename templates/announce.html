@@ -20,8 +20,8 @@
       </div>
 
       <div>
-        <label for="image_file">Image (optional)</label>
-        <input type="file" id="image_file" name="image_file" accept="image/*" onchange="previewImage(event)">
+        <label for="image_file">Images (optional) <span class="hint">max 10</span></label>
+        <input type="file" id="image_file" name="image_file" accept="image/*" multiple onchange="previewImage(event)">
       </div>
     </div>
 
@@ -40,7 +40,7 @@
     <h3>Live Preview</h3>
     <div class="preview">
       <div id="preview-text"><em>Preview markdown akan muncul di sini…</em></div>
-      <img id="preview-image" class="preview-image" hidden alt="Image preview">
+      <div id="preview-image-container"></div>
     </div>
   </section>
 </div>

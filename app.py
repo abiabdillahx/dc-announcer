@@ -1,3 +1,4 @@
+import json
 import os
 import requests
 from flask import Flask, render_template, request
@@ -83,24 +84,20 @@ def send():
         "content": content
     }
 
-    files = None
+    # ===== IMAGE OPTIONAL (multi-upload, max 10) =====
+    uploaded = request.files.getlist("image_file")
+    files = {}
 
-    # ===== IMAGE OPTIONAL =====
-    if "image_file" in request.files:
-        img = request.files["image_file"]
-
+    for i, img in enumerate(uploaded[:10]):
         if img and img.filename:
-            files = {
-                "file": (img.filename, img.stream, img.mimetype)
-            }
+            files[f"files[{i}]"] = (img.filename, img.stream, img.mimetype)
 
     # ===== SEND TO DISCORD =====
-    r = requests.post(
-        DISCORD_WEBHOOK,
-        data=data,
-        files=files,
-        timeout=10
-    )
+    if files:
+        files["payload_json"] = (None, json.dumps({"content": content}), "application/json")
+        r = requests.post(DISCORD_WEBHOOK, files=files, timeout=10)
+    else:
+        r = requests.post(DISCORD_WEBHOOK, data=data, timeout=10)
 
     return ("OK", 200) if r.status_code in (200, 204) else ("FAIL", 500)
 

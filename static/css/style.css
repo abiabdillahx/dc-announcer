@@ -272,10 +272,18 @@ body.dashboard {
 }
 
 /* === PREVIEW IMAGE === */
-.preview-image {
+#preview-image-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-top: 1rem;
-  max-width: 100%;
-  border-radius: 12px;
+}
+
+.preview-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
   border: 1px solid var(--border);
 }
 
